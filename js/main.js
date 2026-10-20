@@ -8,6 +8,45 @@ import {
 	formatAccountNumber,
 } from "./utils/formatters.js";
 
+//Imports de clases
+import { Usuario } from "./models/usuario.js";
+import { Cuenta } from "./models/cuenta.js";
+import { Movimiento } from "./models/movimiento.js";
+
+//Usuario
+const usuarioDemo = new Usuario({
+	nombre: "Imelda Chavez",
+	email: "imeldaguadalupe.chavez@bbva.com",
+	telefono: "4981011957",
+	password: "sip07sip",
+});
+
+console.log("Usuario: ", usuarioDemo);
+
+//Cuenta asociada al usuario
+const cuentaDemo = new Cuenta({
+	numeroCuenta: "123456789012",
+	usuarioId: usuarioDemo.id,
+});
+
+console.log("Cuenta: ", cuentaDemo);
+
+//Depositar
+cuentaDemo.depositar(1000);
+
+console.log("Saldo depositado: ", formatCurrency(cuentaDemo.saldo));
+
+//Movimiento
+const movimientoDemo = new Movimiento({
+	tipo: "DEPOSITO",
+	monto: 1000,
+	descripcion: "Depósito inicial",
+	cuentaOrigen: cuentaDemo.id,
+	saldoResultante: cuentaDemo.saldo,
+});
+
+console.log("Movimiento: ", movimientoDemo);
+
 console.log("Sistema de Gestión Bancaria - V0.2.0");
 
 // Validación de campo debe mostrar true
