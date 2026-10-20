@@ -17,7 +17,7 @@ El objetivo es desarrollar progresivamente un sistema bancario utilizando JavaSc
 
 ## Arquitectura
 
-El proyecto utilizará las siguientes capas:
+El proyecto utiliza las siguientes capas:
 
 - Models
 - Services
@@ -25,27 +25,141 @@ El proyecto utilizará las siguientes capas:
 - Utils
 - Tests
 
+## Arquitectura actual
+
+```text
+js/
+├── main.js
+├── models/
+│   ├── Banco.js
+│   ├── Cuenta.js
+│   ├── Movimiento.js
+│   └── Usuario.js
+└── utils/
+    ├── formatters.js
+    ├── helpers.js
+    └── validators.js
+```
+
+## Modelos disponibles
+
+### Usuario
+
+Representa a una persona registrada dentro del sistema.
+
+Propiedades principales:
+
+- `id`
+- `nombre`
+- `email`
+- `telefono`
+- `password`
+- `activo`
+
+### Cuenta
+
+Representa una cuenta bancaria perteneciente a un usuario.
+
+Propiedades principales:
+
+- `id`
+- `numeroCuenta`
+- `tipo`
+- `saldo`
+- `usuarioId`
+- `fechaApertura`
+- `activa`
+
+Métodos:
+
+- `depositar()`
+- `retirar()`
+
+### Movimiento
+
+Representa una operación realizada sobre una cuenta bancaria.
+
+Propiedades principales:
+
+- `id`
+- `tipo`
+- `monto`
+- `descripcion`
+- `cuentaOrigen`
+- `cuentaDestino`
+- `saldoResultante`
+- `fecha`
+
+### Banco
+
+Coordina los usuarios, cuentas y movimientos del sistema y aplica reglas del dominio bancario.
+
+Métodos disponibles:
+
+- `agregarUsuario()`
+- `buscarUsuarioPorId()`
+- `agregarCuenta()`
+- `buscarCuentaPorId()`
+- `buscarCuentaPorNumero()`
+- `obtenerCuentasDeUsuario()`
+- `registrarMovimiento()`
+- `realizarDeposito()`
+- `obtenerMovimientosDeCuenta()`
+
+## Utilidades disponibles
+
+### Validators
+
+- `validarCampoObligatorio()`
+- `validarMonto()`
+
+### Helpers
+
+- `generarId()`
+
+### Formatters
+
+- `formatCurrency()`
+- `formatDate()`
+- `formatAccountNumber()`
+
+## Funcionalidades implementadas
+
+Actualmente el sistema permite desde JavaScript:
+
+- Crear usuarios.
+- Crear cuentas.
+- Relacionar cuentas con usuarios.
+- Administrar usuarios mediante `Banco`.
+- Administrar cuentas mediante `Banco`.
+- Buscar usuarios.
+- Buscar cuentas.
+- Consultar las cuentas de un usuario.
+- Realizar depósitos.
+- Actualizar el saldo de una cuenta.
+- Registrar movimientos de depósito.
+- Consultar movimientos asociados a una cuenta.
+- Aplicar reglas básicas del dominio.
+
 ## Funcionalidades previstas
 
 Durante las siguientes versiones se desarrollarán:
 
-- Registro de usuarios.
-- Inicio de sesión.
-- Gestión de cuentas.
-- Depósitos.
-- Transferencias.
-- Historial de movimientos.
 - Persistencia con LocalStorage.
+- Registro desde interfaz.
+- Inicio de sesión.
+- Dashboard.
+- Transferencias.
+- Historial visual de movimientos.
 - Manipulación del DOM.
 - Manejo de eventos.
-- Validaciones.
-- Formateadores.
 - Librerías visuales.
 - Pruebas automatizadas con Jest.
 - Git y GitHub.
 
 ## Versión actual
 
+v0.4.0 — Modelo Banco y reglas del dominio bancario.
 v0.3.0 — Modelado del dominio con Programación Orientada a Objetos.
 v0.2.0 - Arquitectura modular y utilidades base.
 v0.1.0 — Estructura inicial del proyecto.

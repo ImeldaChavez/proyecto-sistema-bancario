@@ -13,6 +13,12 @@ import { Usuario } from "./models/usuario.js";
 import { Cuenta } from "./models/cuenta.js";
 import { Movimiento } from "./models/movimiento.js";
 
+//Imports banco
+import { Banco } from "./models/banco.js";
+
+//Banco
+const bancoDemo = new Banco();
+
 //Usuario
 const usuarioDemo = new Usuario({
 	nombre: "Imelda Chavez",
@@ -23,6 +29,11 @@ const usuarioDemo = new Usuario({
 
 console.log("Usuario: ", usuarioDemo);
 
+//Agragar usuario a banco
+bancoDemo.agregarUsuario(usuarioDemo);
+
+console.log("Uusuarios regsitrados en BancoDemo:", bancoDemo.usuarios);
+
 //Cuenta asociada al usuario
 const cuentaDemo = new Cuenta({
 	numeroCuenta: "123456789012",
@@ -30,6 +41,9 @@ const cuentaDemo = new Cuenta({
 });
 
 console.log("Cuenta: ", cuentaDemo);
+
+//Agregar cuenta al banco
+bancoDemo.agregarCuenta(cuentaDemo);
 
 //Depositar
 cuentaDemo.depositar(1000);
@@ -46,6 +60,33 @@ const movimientoDemo = new Movimiento({
 });
 
 console.log("Movimiento: ", movimientoDemo);
+
+console.log("Movs registrados: ", bancoDemo.movimientos);
+
+//Busqueda por ID
+const usuarioEncontrado = bancoDemo.buscarUsuarioPorId(usuarioDemo.id);
+
+// MUESTRA SI LO ENCONTRO
+console.log("Usuario encontrado:", usuarioEncontrado);
+
+console.log(usuarioEncontrado === usuarioDemo);
+
+// PRUEBA DE OBTENER LAS CUENTAS USUARIO
+const cuentasUsuario = bancoDemo.obtenerCuentasDeUsuario(usuarioDemo.id);
+
+// MOSTRAMOS CUALES SON SUS CUENTAS
+console.log("Cuentas del usuario:", cuentasUsuario);
+
+// PRUEBA CON REGAL NEGATIVA
+// Intentamos realizar un depósito con un monto inválido.
+try {
+	bancoDemo.realizarDeposito({
+		cuentaId: cuentaDemo.id,
+		monto: -500,
+	});
+} catch (error) {
+	console.log("Error controlado:", error.message);
+}
 
 console.log("Sistema de Gestión Bancaria - V0.2.0");
 
