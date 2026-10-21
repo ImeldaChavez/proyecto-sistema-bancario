@@ -32,7 +32,7 @@ export class Banco {
 
 	//Bucar usuario por ID
 	//Busca un usuario utilizando su identificador interno.
-	buscarUusarioPorId(usuarioId) {
+	buscarUsuarioPorId(usuarioId) {
 		return this.usuarios.find((usuario) => usuario.id === usuarioId) || null;
 	}
 
@@ -92,7 +92,7 @@ export class Banco {
 		return movimiento;
 	}
 
-	//Realizar deposito
+	//Realizar depósito
 	//Coordina toda la operación de depósito:
 	//1. Validar monto.
 	//2. Buscar cuenta.
@@ -100,7 +100,7 @@ export class Banco {
 	//4. Crear movimiento.
 	//5. Registrar movimiento
 
-	realizarMovimiento(cuentaId, monto, descripcion = "") {
+	realizarDeposito({ cuentaId, monto, descripcion = "" }) {
 		const montoNumerico = Number(monto);
 
 		//El monto debe ser un número válido y mayor que cero.

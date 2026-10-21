@@ -16,50 +16,144 @@ import { Movimiento } from "./models/movimiento.js";
 //Imports banco
 import { Banco } from "./models/banco.js";
 
-//Banco
-const bancoDemo = new Banco();
+//Imports Services
+import { STORAGE_KEYS, storageService } from "./services/storageService.js";
 
-//Usuario
-const usuarioDemo = new Usuario({
-	nombre: "Imelda Chavez",
-	email: "imeldaguadalupe.chavez@bbva.com",
-	telefono: "4981011957",
-	password: "sip07sip",
-});
+//Guardar estado del banco
+//Recibe una instancia de Banco y persiste sus tres coleccioes.
+function guardarBanco(banco) {
+	//Guardar usuarios
+	storageService.guardar(STORAGE_KEYS.USUARIOS, banco.usuarios);
+
+	//Guardar cuentas
+	storageService.guardar(STORAGE_KEYS.CUENTAS, banco.cuentas);
+
+	//Guardar movimientos
+	storageService.guardar(STORAGE_KEYS.MOVIMIENTOS, banco.movimientos);
+}
+
+//Cargar banco
+//Recupera la información persistida, reconstruye cada instancia y finalmente crea nuevamente el banco.
+function cargarBanco() {
+	//Recuperar usuarios
+	const usuariosGuardados = storageService.obtener(STORAGE_KEYS.USUARIOS, []);
+
+	//Recuperar cuentas
+	const cuentasGuardadas = storageService.obtener(STORAGE_KEYS.CUENTAS, []);
+
+	//Recuperar movimientos
+	const movimientosGuardados = storageService.obtener(
+		STORAGE_KEYS.MOVIMIENTOS,
+		[],
+	);
+
+	//Reconstruir usuarios
+	const usuarios = usuariosGuardados.map((usuario) => new Usuario(usuario));
+
+	//Reconstruir cuentas
+	const cuentas = cuentasGuardadas.map((cuenta) => new Cuenta(cuenta));
+
+	//Reconstrour movimeintos
+	const movimientos = movimientosGuardados.map(
+		(movimiento) => new Movimiento(movimiento),
+	);
+
+	//Crear nuevamente el banco
+	return new Banco({
+		usuarios,
+		cuentas,
+		movimientos,
+	});
+}
+
+//Banco
+const bancoDemo = cargarBanco();
+
+if (bancoDemo.usuarios.length === 0) {
+	//Crear usuario inicial
+	const usuarioDemo = new Usuario({
+		nombre: "Juan Suarez",
+		email: "juan@correo.com",
+		telefono: "5512345678",
+		password: "123456",
+	});
+
+	//Registrar usuario
+	bancoDemo.agregarUsuario(usuarioDemo);
+
+	//Crear cuenta inicial
+	const cuentaDemo = new Cuenta({
+		numeroCuenta: "123456789012",
+		usuarioId: usuarioDemo.id,
+	});
+
+	//Registrar cuenta
+	bancoDemo.agregarCuenta(cuentaDemo);
+
+	//Deposito inicial
+	bancoDemo.realizarDeposito({
+		cuentaId: cuentaDemo.id,
+		monto: 1000,
+		descripcion: "Depósito inicial",
+	});
+
+	//Guardar banco
+	guardarBanco(bancoDemo);
+
+	//Mostrar banco recuperado
+	console.log("Banco recuperado:", bancoDemo);
+
+	//Mostrar usuarios
+	console.log("Usuarios almacenados:", bancoDemo.usuarios);
+
+	//Mostrar cuentas
+	console.log("Cuentas almacenadas:", bancoDemo.cuentas);
+
+	//Mostrar movimeintos
+	console.log("Movimientos almacenados:", bancoDemo.movimientos);
+
+	//Obtener primera  cuenta
+	const cuentaPrincipal = bancoDemo.cuentas[0] || null;
+}
+
+//Usuario y cuenta de demostración ya cargados o creados al iniciar el banco.
+const usuarioDemo = bancoDemo.usuarios[0] || null;
+
+//Comprobar datos recuperados
+// MOSTRAR BANCO RECUPERADO
+console.log("Banco recuperado:", bancoDemo);
+
+// MOSTRAR USUARIOS
+console.log("Usuarios almacenados:", bancoDemo.usuarios);
+
+// MOSTRAR CUENTAS
+console.log("Cuentas almacenadas:", bancoDemo.cuentas);
+
+// MOSTRAR MOVIMIENTOS
+console.log("Movimientos almacenados:", bancoDemo.movimientos);
 
 console.log("Usuario: ", usuarioDemo);
+console.log("Usuarios registrados en BancoDemo:", bancoDemo.usuarios);
 
-//Agragar usuario a banco
-bancoDemo.agregarUsuario(usuarioDemo);
+const cuentaPrincipal = bancoDemo.cuentas[0] || null;
 
-console.log("Uusuarios regsitrados en BancoDemo:", bancoDemo.usuarios);
+//Mostrar saldo persistido
+if (cuentaPrincipal) {
+	console.log("Saldo persistido:", formatCurrency(cuentaPrincipal.saldo));
+	console.log(
+		"¿La cuenta recuperada sigue siendo una instancia de Cuenta?",
+		cuentaPrincipal instanceof Cuenta,
+	);
+}
 
-//Cuenta asociada al usuario
-const cuentaDemo = new Cuenta({
-	numeroCuenta: "123456789012",
-	usuarioId: usuarioDemo.id,
-});
+//Reutilizar la cuenta existente evita registrarla de nuevo en cada carga.
+const cuentaDemo = cuentaPrincipal;
 
 console.log("Cuenta: ", cuentaDemo);
 
-//Agregar cuenta al banco
-bancoDemo.agregarCuenta(cuentaDemo);
-
-//Depositar
-cuentaDemo.depositar(1000);
-
-console.log("Saldo depositado: ", formatCurrency(cuentaDemo.saldo));
-
-//Movimiento
-const movimientoDemo = new Movimiento({
-	tipo: "DEPOSITO",
-	monto: 1000,
-	descripcion: "Depósito inicial",
-	cuentaOrigen: cuentaDemo.id,
-	saldoResultante: cuentaDemo.saldo,
-});
-
-console.log("Movimiento: ", movimientoDemo);
+if (cuentaDemo) {
+	console.log("Saldo de la cuenta: ", formatCurrency(cuentaDemo.saldo));
+}
 
 console.log("Movs registrados: ", bancoDemo.movimientos);
 
@@ -80,10 +174,12 @@ console.log("Cuentas del usuario:", cuentasUsuario);
 // PRUEBA CON REGAL NEGATIVA
 // Intentamos realizar un depósito con un monto inválido.
 try {
-	bancoDemo.realizarDeposito({
-		cuentaId: cuentaDemo.id,
-		monto: -500,
-	});
+	if (cuentaDemo) {
+		bancoDemo.realizarDeposito({
+			cuentaId: cuentaDemo.id,
+			monto: -500,
+		});
+	}
 } catch (error) {
 	console.log("Error controlado:", error.message);
 }
