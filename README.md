@@ -2,7 +2,7 @@
 
 Proyecto integrador correspondiente al Módulo 4.
 
-El objetivo es desarrollar progresivamente un sistema bancario utilizando JavaScript moderno, arquitectura modular, programación orientada a objetos y programación funcional.
+El proyecto se desarrolla progresivamente utilizando JavaScript moderno, arquitectura modular, programación orientada a objetos y programación funcional.
 
 ## Tecnologías
 
@@ -12,6 +12,8 @@ El objetivo es desarrollar progresivamente un sistema bancario utilizando JavaSc
 - ECMAScript Modules
 - Node.js
 - npm
+- LocalStorage
+- SweetAlert2
 - Git
 - GitHub
 
@@ -30,134 +32,136 @@ El proyecto utiliza las siguientes capas:
 ```text
 js/
 ├── main.js
+│
 ├── models/
 │   ├── Banco.js
 │   ├── Cuenta.js
 │   ├── Movimiento.js
 │   └── Usuario.js
+│
+├── services/
+│   ├── AuthService.js
+│   ├── BancoService.js
+│   └── StorageService.js
+│
+├── ui/
+│   ├── CuentaUI.js
+│   └── DashboardUI.js
+│
 └── utils/
     ├── formatters.js
     ├── helpers.js
     └── validators.js
 ```
 
-## Modelos disponibles
+## Páginas actuales
 
-### Usuario
+- `index.html`
+- `dashboard.html`
+- `cuenta.html`
 
-Representa a una persona registrada dentro del sistema.
+## Mi cuenta
 
-Propiedades principales:
+La página `cuenta.html` permite consultar:
 
-- `id`
-- `nombre`
-- `email`
-- `telefono`
-- `password`
-- `activo`
+- Titular.
+- Número de cuenta.
+- Tipo de cuenta.
+- Saldo.
+- Fecha de apertura.
+- Estado de la cuenta.
 
-### Cuenta
+También permite administrar:
 
-Representa una cuenta bancaria perteneciente a un usuario.
+- Nombre.
+- Correo electrónico.
+- Teléfono.
+- Contraseña.
+- Eliminación de la cuenta.
 
-Propiedades principales:
+## BancoService
 
-- `id`
-- `numeroCuenta`
-- `tipo`
-- `saldo`
-- `usuarioId`
-- `fechaApertura`
-- `activa`
+Además de las operaciones anteriores, ahora incorpora:
 
-Métodos:
+- `actualizarUsuario()`
+- `cambiarPassword()`
+- `eliminarUsuario()`
 
-- `depositar()`
-- `retirar()`
+### actualizarUsuario()
 
-### Movimiento
+Actualiza:
 
-Representa una operación realizada sobre una cuenta bancaria.
+- nombre
+- email
+- teléfono
 
-Propiedades principales:
+y evita utilizar un correo registrado por otro usuario.
 
-- `id`
-- `tipo`
-- `monto`
-- `descripcion`
-- `cuentaOrigen`
-- `cuentaDestino`
-- `saldoResultante`
-- `fecha`
+### cambiarPassword()
 
-### Banco
+Comprueba:
 
-Coordina los usuarios, cuentas y movimientos del sistema y aplica reglas del dominio bancario.
+- existencia del usuario
+- contraseña actual
+- nueva contraseña diferente
+- longitud mínima
 
-Métodos disponibles:
+### eliminarUsuario()
 
-- `agregarUsuario()`
-- `buscarUsuarioPorId()`
-- `agregarCuenta()`
-- `buscarCuentaPorId()`
-- `buscarCuentaPorNumero()`
-- `obtenerCuentasDeUsuario()`
-- `registrarMovimiento()`
-- `realizarDeposito()`
-- `obtenerMovimientosDeCuenta()`
+Elimina:
 
-## Utilidades disponibles
+- usuario
+- cuentas asociadas
+- movimientos asociados
 
-### Validators
+La eliminación solo está permitida cuando las cuentas del usuario tienen saldo cero.
 
-- `validarCampoObligatorio()`
-- `validarMonto()`
+## SweetAlert2
 
-### Helpers
+En esta versión se utiliza para:
 
-- `generarId()`
+- Confirmar cierre de sesión.
+- Confirmar eliminación de cuenta.
+- Informar actualización exitosa.
+- Informar cambio de contraseña.
+- Informar eliminación exitosa.
+- Mostrar errores de eliminación.
 
-### Formatters
+## Programación funcional aplicada
 
-- `formatCurrency()`
-- `formatDate()`
-- `formatAccountNumber()`
+Se utilizan métodos como:
+
+- `find()`
+- `some()`
+- `map()`
+- `filter()`
+- `includes()`
+- `forEach()`
+
+También se utiliza Spread Operator para actualizar objetos sin eliminar propiedades existentes.
 
 ## Funcionalidades implementadas
 
-Actualmente el sistema permite desde JavaScript:
+Actualmente el sistema permite:
 
-- Crear usuarios.
-- Crear cuentas.
-- Relacionar cuentas con usuarios.
-- Administrar usuarios mediante `Banco`.
-- Administrar cuentas mediante `Banco`.
-- Buscar usuarios.
-- Buscar cuentas.
-- Consultar las cuentas de un usuario.
-- Realizar depósitos.
-- Actualizar el saldo de una cuenta.
-- Registrar movimientos de depósito.
-- Consultar movimientos asociados a una cuenta.
-- Aplicar reglas básicas del dominio.
-
-## Funcionalidades previstas
-
-Durante las siguientes versiones se desarrollarán:
-
-- Persistencia con LocalStorage.
-- Registro desde interfaz.
-- Inicio de sesión.
-- Dashboard.
-- Transferencias.
-- Historial visual de movimientos.
-- Manipulación del DOM.
-- Manejo de eventos.
-- Librerías visuales.
-- Pruebas automatizadas con Jest.
-- Git y GitHub.
+- Registrar usuarios.
+- Crear cuentas automáticamente.
+- Autenticarse.
+- Mantener sesión.
+- Cerrar sesión.
+- Consultar Dashboard.
+- Consultar datos bancarios.
+- Consultar información personal.
+- Actualizar información personal.
+- Evitar correos duplicados.
+- Cambiar contraseña.
+- Eliminar usuarios con saldo cero.
+- Eliminar datos relacionados.
+- Persistir los cambios en LocalStorage.
 
 ## Versión actual
 
+v0.8.0 — Gestión de cuenta, perfil y seguridad.
+v0.7.0 — BancoService y Dashboard bancario.
 v0.6.0 — Registro, autenticación, sesión y SweetAlert2.
 v0.5.0 — Persistencia con LocalStorage y StorageService.
