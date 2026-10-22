@@ -11,16 +11,97 @@
 	</head>
 
 	<body>
-		<main class="app">
-			<!-- Nombre principal de la aplicación -->
-			<h1>Sistema de Gestión Bancaria</h1>
+		<!--Pagina de autenticación-->
+		<main class="auth-page">
+			<header class="auth-header">
+				<h1>Sistema de Gestión Bancaria</h1>
 
-			<!-- Identificación del proyecto -->
-			<p>Proyecto Integrador — Módulo 4</p>
+				<p>Accede o crea una cuenta para continuar</p>
 
-			<!-- Versión actual del proyecto -->
-			<p>Versión v0.5.0</p>
+				<span> Versión v0.6.0 </span>
+			</header>
+
+			<!--Contenedr de formularios-->
+			<section class="auth-container">
+				<!--Iniciar sesón-->
+				<article class="auth-card">
+					<h2>Iniciar sesión</h2>
+
+					<form id="formLogin" novalidate>
+						<div class="form-group">
+							<label for="loginEmail"> Correo electrónico </label>
+
+							<input type="email" id="loginEmail" autocomplete="email" />
+						</div>
+
+						<div class="form-group">
+							<label for="loginPassword"> Contraseña </label>
+
+							<input
+								type="password"
+								id="loginPassword"
+								autocomplete="current-password"
+							/>
+						</div>
+
+						<button type="submit" class="btn btn-primary">
+							Iniciar sesión
+						</button>
+					</form>
+				</article>
+
+				<!--Crear cuenta-->
+				<article class="auth-card">
+					<h2>Crear cuenta</h2>
+
+					<form id="formRegistro" novalidate>
+						<div class="form-group">
+							<label for="registroNombre"> Nombre completo </label>
+
+							<input type="text" id="registroNombre" />
+						</div>
+
+						<div class="form-group">
+							<label for="registroEmail"> Correo electrónico </label>
+
+							<input type="email" id="registroEmail" autocomplete="email" />
+						</div>
+
+						<div class="form-group">
+							<label for="registroTelefono"> Teléfono </label>
+
+							<input type="tel" id="registroTelefono" />
+						</div>
+
+						<div class="form-group">
+							<label for="registroPassword"> Contraseña </label>
+
+							<input
+								type="password"
+								id="registroPassword"
+								autocomplete="new-password"
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="registroConfirmPassword">
+								Confirmar contraseña
+							</label>
+
+							<input
+								type="password"
+								id="registroConfirmPassword"
+								autocomplete="new-password"
+							/>
+						</div>
+
+						<button type="submit" class="btn btn-primary">Crear cuenta</button>
+					</form>
+				</article>
+			</section>
 		</main>
+
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 		<script type="module" src="./js/main.js"></script>
 	</body>
