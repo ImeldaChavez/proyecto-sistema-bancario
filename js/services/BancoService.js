@@ -172,6 +172,33 @@ class BancoService {
 		};
 	}
 
+	obtenerResumenMovimientos(usuarioId) {
+		const { movimientos } = this.obtenerDatosUsuario(usuarioId);
+
+		return {
+			total: movimientos.length,
+			depositos: movimientos.filter(
+				(movimiento) => movimiento.tipo === "DEPOSITO",
+			).length,
+			enviadas: movimientos.filter(
+				(movimiento) => movimiento.tipo === "TRANSFERENCIA_ENVIADA",
+			).length,
+			recibidas: movimientos.filter(
+				(movimiento) => movimiento.tipo === "TRANSFERENCIA_RECIBIDA",
+			).length,
+		};
+	}
+
+	obtenerMovimientosUsuario(usuarioId, filtro = "TODOS") {
+		const { movimientos } = this.obtenerDatosUsuario(usuarioId);
+
+		if (filtro === "TODOS") {
+			return movimientos;
+		}
+
+		return movimientos.filter((movimiento) => movimiento.tipo === filtro);
+	}
+
 	actualizarUsuario(usuarioId, { nombre, email, telefono }) {
 		const usuarios = storageService.obtener(STORAGE_KEYS.USUARIOS, []);
 		const usuario = usuarios.find((item) => item.id === usuarioId);
