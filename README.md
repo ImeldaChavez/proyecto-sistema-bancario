@@ -159,4 +159,5 @@ Durante las siguientes versiones se desarrollarán:
 
 ## Versión actual
 
+v0.6.0 — Registro, autenticación, sesión y SweetAlert2.
 v0.5.0 — Persistencia con LocalStorage y StorageService.
