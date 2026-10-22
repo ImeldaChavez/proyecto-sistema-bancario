@@ -77,6 +77,40 @@ class BancoService {
 		return true;
 	}
 
+	realizarDeposito(datosDeposito) {
+		const banco = this.obtenerInstanciaBanco();
+		const movimiento = banco.realizarDeposito(datosDeposito);
+
+		this.guardarBanco();
+
+		return movimiento;
+	}
+
+	realizarTransferencia({
+		cuentaOrigenId,
+		numeroCuentaDestino,
+		monto,
+		descripcion = "",
+	}) {
+		const banco = this.obtenerInstanciaBanco();
+		const cuentaDestino = banco.buscarCuentaPorNumero(numeroCuentaDestino);
+
+		if (!cuentaDestino) {
+			throw new Error("La cuenta destino no existe.");
+		}
+
+		const resultado = banco.realizarTransferencia({
+			cuentaOrigenId,
+			cuentaDestinoId: cuentaDestino.id,
+			monto,
+			descripcion,
+		});
+
+		this.guardarBanco();
+
+		return resultado;
+	}
+
 	//Obtener datos de usuario
 	//Obtine la información bancaria relacionada con una usuario determinado
 	obtenerDatosUsuario(usuarioId) {
@@ -234,6 +268,51 @@ class BancoService {
 
 		const cuentasUsuarioIds = cuentasUsuario.map((cuenta) => cuenta.id);
 
+		const usuariosFiltrados = usuarios.filter((item) => item.id !== usuarioId);
+		const cuentasFiltradas = cuentas.filter(
+			(cuenta) => cuenta.usuarioId !== usuarioId,
+		);
+		const movimientosFiltrados = movimientos.filter(
+			(movimiento) =>
+				!cuentasUsuarioIds.includes(movimiento.cuentaOrigen) &&
+				!cuentasUsuarioIds.includes(movimiento.cuentaDestino),
+		);
+
+		storageService.guardar(STORAGE_KEYS.USUARIOS, usuariosFiltrados);
+		storageService.guardar(STORAGE_KEYS.CUENTAS, cuentasFiltradas);
+		storageService.guardar(STORAGE_KEYS.MOVIMIENTOS, movimientosFiltrados);
+
+		this.recargarBanco();
+
+		return true;
+	}
+
+	//Eliminar usuario
+	eliminarUsuario(usuarioId) {
+		const usuarios = storageService.obtener(STORAGE_KEYS.USUARIOS, []);
+		const cuentas = storageService.obtener(STORAGE_KEYS.CUENTAS, []);
+		const movimientos = storageService.obtener(STORAGE_KEYS.MOVIMIENTOS, []);
+		const usuario = usuarios.find((item) => item.id === usuarioId);
+
+		if (!usuario) {
+			throw new Error("El usuario no existe.");
+		}
+
+		const cuentasUsuario = cuentas.filter(
+			(cuenta) => cuenta.usuarioId === usuarioId,
+		);
+
+		const tieneSaldo = cuentasUsuario.some(
+			(cuenta) => Number(cuenta.saldo) > 0,
+		);
+
+		if (tieneSaldo) {
+			throw new Error(
+				"No puedes eliminar tu cuenta mientras tengas saldo disponible.",
+			);
+		}
+
+		const cuentasUsuarioIds = cuentasUsuario.map((cuenta) => cuenta.id);
 		const usuariosFiltrados = usuarios.filter((item) => item.id !== usuarioId);
 		const cuentasFiltradas = cuentas.filter(
 			(cuenta) => cuenta.usuarioId !== usuarioId,

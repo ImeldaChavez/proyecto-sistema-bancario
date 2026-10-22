@@ -2,7 +2,7 @@
 
 Proyecto integrador correspondiente al Módulo 4.
 
-El proyecto se desarrolla progresivamente utilizando JavaScript moderno, arquitectura modular, programación orientada a objetos y programación funcional.
+El sistema se desarrolla progresivamente utilizando JavaScript moderno, programación orientada a objetos, programación funcional, arquitectura modular y persistencia local.
 
 ## Tecnologías
 
@@ -10,22 +10,12 @@ El proyecto se desarrolla progresivamente utilizando JavaScript moderno, arquite
 - CSS3
 - JavaScript
 - ECMAScript Modules
-- Node.js
-- npm
 - LocalStorage
 - SweetAlert2
+- Node.js
+- npm
 - Git
 - GitHub
-
-## Arquitectura
-
-El proyecto utiliza las siguientes capas:
-
-- Models
-- Services
-- UI
-- Utils
-- Tests
 
 ## Arquitectura actual
 
@@ -46,7 +36,8 @@ js/
 │
 ├── ui/
 │   ├── CuentaUI.js
-│   └── DashboardUI.js
+│   ├── DashboardUI.js
+│   └── TransferenciasUI.js
 │
 └── utils/
     ├── formatters.js
@@ -59,108 +50,84 @@ js/
 - `index.html`
 - `dashboard.html`
 - `cuenta.html`
+- `transferencia.html`
 
-## Mi cuenta
+## Operaciones bancarias
 
-La página `cuenta.html` permite consultar:
+### Depósitos
 
-- Titular.
-- Número de cuenta.
-- Tipo de cuenta.
-- Saldo.
-- Fecha de apertura.
-- Estado de la cuenta.
+El sistema permite depositar dinero en una cuenta.
 
-También permite administrar:
+La operación:
 
-- Nombre.
-- Correo electrónico.
-- Teléfono.
-- Contraseña.
-- Eliminación de la cuenta.
+1. Valida el monto.
+2. Busca la cuenta.
+3. Actualiza el saldo.
+4. Genera un movimiento `DEPOSITO`.
+5. Guarda el saldo resultante.
+6. Persiste la operación.
 
-## BancoService
+### Transferencias
 
-Además de las operaciones anteriores, ahora incorpora:
+El sistema permite transferir dinero entre cuentas.
 
-- `actualizarUsuario()`
-- `cambiarPassword()`
-- `eliminarUsuario()`
+La operación:
 
-### actualizarUsuario()
+1. Valida el monto.
+2. Localiza la cuenta origen.
+3. Localiza la cuenta destino.
+4. Comprueba que ambas cuentas estén activas.
+5. Evita transferencias a la misma cuenta.
+6. Comprueba saldo suficiente.
+7. Retira dinero de la cuenta origen.
+8. Deposita dinero en la cuenta destino.
+9. Genera `TRANSFERENCIA_ENVIADA`.
+10. Genera `TRANSFERENCIA_RECIBIDA`.
+11. Persiste las cuentas y movimientos.
 
-Actualiza:
+## Tipos de movimientos actuales
 
-- nombre
-- email
-- teléfono
-
-y evita utilizar un correo registrado por otro usuario.
-
-### cambiarPassword()
-
-Comprueba:
-
-- existencia del usuario
-- contraseña actual
-- nueva contraseña diferente
-- longitud mínima
-
-### eliminarUsuario()
-
-Elimina:
-
-- usuario
-- cuentas asociadas
-- movimientos asociados
-
-La eliminación solo está permitida cuando las cuentas del usuario tienen saldo cero.
+- `DEPOSITO`
+- `TRANSFERENCIA_ENVIADA`
+- `TRANSFERENCIA_RECIBIDA`
 
 ## SweetAlert2
 
-En esta versión se utiliza para:
+En las transferencias se utiliza para:
 
-- Confirmar cierre de sesión.
-- Confirmar eliminación de cuenta.
-- Informar actualización exitosa.
-- Informar cambio de contraseña.
-- Informar eliminación exitosa.
-- Mostrar errores de eliminación.
-
-## Programación funcional aplicada
-
-Se utilizan métodos como:
-
-- `find()`
-- `some()`
-- `map()`
-- `filter()`
-- `includes()`
-- `forEach()`
-
-También se utiliza Spread Operator para actualizar objetos sin eliminar propiedades existentes.
+- Validaciones.
+- Confirmación previa.
+- Saldo insuficiente.
+- Cuenta inexistente.
+- Transferencia a la misma cuenta.
+- Transferencia exitosa.
+- Depósito exitoso.
+- Errores de operación.
 
 ## Funcionalidades implementadas
 
-Actualmente el sistema permite:
+Actualmente la aplicación permite:
 
 - Registrar usuarios.
-- Crear cuentas automáticamente.
-- Autenticarse.
+- Crear cuentas bancarias.
+- Iniciar sesión.
 - Mantener sesión.
-- Cerrar sesión.
-- Consultar Dashboard.
-- Consultar datos bancarios.
-- Consultar información personal.
-- Actualizar información personal.
-- Evitar correos duplicados.
+- Proteger páginas.
+- Mostrar dashboard.
+- Consultar información bancaria.
+- Actualizar perfil.
 - Cambiar contraseña.
-- Eliminar usuarios con saldo cero.
-- Eliminar datos relacionados.
-- Persistir los cambios en LocalStorage.
+- Eliminar usuario.
+- Realizar depósitos.
+- Realizar transferencias.
+- Actualizar saldos.
+- Registrar transferencias enviadas.
+- Registrar transferencias recibidas.
+- Persistir operaciones con LocalStorage.
 
 ## Versión actual
 
+v0.9.0 — Operaciones bancarias y transferencias.
 v0.8.0 — Gestión de cuenta, perfil y seguridad.
 v0.7.0 — BancoService y Dashboard bancario.
 v0.6.0 — Registro, autenticación, sesión y SweetAlert2.

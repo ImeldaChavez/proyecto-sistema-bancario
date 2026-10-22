@@ -142,4 +142,121 @@ export class Banco {
 				movimiento.cuentaDestino === cuentaId,
 		);
 	}
+
+	//Deppositos
+	realizarDeposito({ cuentaId, monto, descripcion = "" }) {
+		const montoNumerico = Number(monto);
+
+		//Montos mayores a 0
+		if (!Number.isFinite(montoNumerico) || montoNumerico <= 0) {
+			throw new Error("Monto inválido, el monto debe ser mayor a cero.");
+		}
+
+		//Cuenta donde se realiza el deposito
+		const cuenta = this.buscarCuentaPorId(cuentaId);
+
+		if (!cuenta) {
+			throw new Error("La cuenta no existe.");
+		}
+
+		//Modificamos el saldo utilizando el comportamiento de Cuenta.
+		cuenta.depositar(montoNumerico);
+
+		//Registramos el depósito dentro del historial.
+		const movimiento = new Movimiento({
+			tipo: "DEPOSITO",
+			monto: montoNumerico,
+			descripcion,
+			cuentaOrigen: cuenta.id,
+			saldoResultante: cuenta.saldo,
+		});
+
+		this.registrarMovimiento(movimiento);
+
+		return movimiento;
+	}
+
+	//Transferencias
+	realizarTransferencia({
+		cuentaOrigenId,
+		cuentaDestinoId,
+		monto,
+		descripcion = "",
+	}) {
+		const montoNumerico = Number(monto);
+
+		//Monto mayor a cero
+		if (!Number.isFinite(montoNumerico) || montoNumerico <= 0) {
+			throw new Error("Monto inválido, el monto debe ser mayor a cero.");
+		}
+
+		//Cuentas que participan en la operación
+		const origen = this.buscarCuentaPorId(cuentaOrigenId);
+		const destino = this.buscarCuentaPorId(cuentaDestinoId);
+
+		if (!origen) {
+			throw new Error("La cuenta origen no existe.");
+		}
+
+		if (!destino) {
+			throw new Error("La cuenta destino no existe.");
+		}
+
+		//Validación de cuentas activas
+		if (!origen.activa) {
+			throw new Error("La cuenta origen no está activa.");
+		}
+
+		if (!destino.activa) {
+			throw new Error("La cuenta destino no está activa.");
+		}
+
+		//Validación para no transferir en la misma cuenta
+		if (origen.id === destino.id) {
+			throw new Error("No puedes transferir dinero a la misma cuenta");
+		}
+
+		//Validación de saldo de la cuenta origen, ya que necesita saldo suficiente para completar la operación.
+		if (origen.saldo < montoNumerico) {
+			throw new Error("Saldo insuficiente");
+		}
+
+		//Descontamos el dinero de la cuenta origen.
+		origen.retirar(montoNumerico);
+
+		//Depositamos el mismo monto en la cuenta destino.
+		destino.depositar(montoNumerico);
+
+		//Creamos el movimiento desde la perspectiva del emisor.
+		const movimientoEnviado = new Movimiento({
+			tipo: "TRANSFERENCIA_ENVIADA",
+			monto: montoNumerico,
+			descripcion,
+			cuentaOrigen: origen.id,
+			cuentaDestino: destino.id,
+			saldoResultante: origen.saldo,
+		});
+
+		//Creamos el movimiento desde la perspectiva del receptor.
+		const movimientoRecibido = new Movimiento({
+			tipo: "TRANSFERENCIA_RECIBIDA",
+			monto: montoNumerico,
+			descripcion,
+			cuentaOrigen: origen.id,
+			cuentaDestino: destino.id,
+			saldoResultante: destino.saldo,
+		});
+
+		// Guardamos ambos movimientos.
+		this.registrarMovimiento(movimientoEnviado);
+
+		this.registrarMovimiento(movimientoRecibido);
+
+		return {
+			origen,
+			destino,
+			movimientoEnviado,
+			movimientoRecibido,
+		};
+	}
 }
